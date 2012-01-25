@@ -1,0 +1,28 @@
+#[link(name = "llvm",
+       vers = "0.1",
+       uuid = "905a34f0-ca79-4e5c-bf5d-3e5100056a55",
+       url = "http://github.com/brson/rust-llvm")];
+
+#[comment = "LLVM bindings for Rust"];
+#[license = "MIT"];
+#[crate_type = "lib"];
+
+#[doc(
+    brief = "LLVM Bindings for Rust",
+    desc = "
+
+This crate provides bindings to the LLVM C API, plus some additional
+convenience functions used by the Rust compiler. It is simply a
+wrapper around librustc, but packaged up in a nicer, documented
+crate that is visible to cargo.
+
+")];
+
+use std;
+use rustc;
+
+import rllvm = rustc::lib::llvm;
+
+// FIXME: Need a [no_core] attribute to use this name
+#[path = "core.rs"]
+mod core_;
