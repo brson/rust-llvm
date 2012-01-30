@@ -5,16 +5,53 @@ enum llbool = ctypes::c_int;
 
 enum opaque_ref = *ctypes::void;
 
+#[doc = "
+The top-level container for all LLVM global data.  See the LLVMContext
+class.
+"]
 enum context_ref = opaque_ref;
+
+#[doc = "
+The top-level container for all other LLVM Intermediate Representation
+(IR) objects. See the llvm::Module class.
+"]
 enum module_ref = opaque_ref;
+
+#[doc = "
+Each value in the LLVM IR has a type, an LLVMTypeRef. See the
+llvm::Type class.
+"]
 enum type_ref = opaque_ref;
 enum value_ref = opaque_ref;
 enum basic_block_ref = opaque_ref;
 enum builder_ref = opaque_ref;
+
+#[doc = "
+Interface used to provide a module to JIT or interpreter.  This is now
+just a synonym for llvm::Module, but we have to keep using the
+different type to keep binary compatibility.
+"]
 enum module_provider_ref = opaque_ref;
+
+#[doc = "
+Used to provide a module to JIT or interpreter.  See the
+llvm::MemoryBuffer class.
+"]
 enum memory_buffer_ref = opaque_ref;
+
+#[doc = "
+See the llvm::PassManagerBase class.
+"]
 enum pass_manager_ref = opaque_ref;
+
+#[doc = "
+See the llvm::PassRegistry class.
+"]
 enum pass_registry_ref = opaque_ref;
+
+#[doc = "
+Used to get the users and usees of a Value. See the llvm::Use class.
+"]
 enum use_ref = opaque_ref;
 
 enum attribute {
