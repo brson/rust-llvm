@@ -3,17 +3,19 @@ import core::*;
 
 enum llbool = ctypes::c_int;
 
-enum context_ref = *ctypes::void;
-enum module_ref = *ctypes::void;
-enum type_ref = *ctypes::void;
-enum value_ref = *ctypes::void;
-enum basic_block_ref = *ctypes::void;
-enum builder_ref = *ctypes::void;
-enum module_provider_ref = *ctypes::void;
-enum memory_buffer_ref = *ctypes::void;
-enum pass_manager_ref = *ctypes::void;
-enum pass_registry_ref = *ctypes::void;
-enum use_ref = *ctypes::void;
+enum opaque_ref = *ctypes::void;
+
+enum context_ref = opaque_ref;
+enum module_ref = opaque_ref;
+enum type_ref = opaque_ref;
+enum value_ref = opaque_ref;
+enum basic_block_ref = opaque_ref;
+enum builder_ref = opaque_ref;
+enum module_provider_ref = opaque_ref;
+enum memory_buffer_ref = opaque_ref;
+enum pass_manager_ref = opaque_ref;
+enum pass_registry_ref = opaque_ref;
+enum use_ref = opaque_ref;
 
 enum attribute {
     zext_attribute              = 1<<0,
