@@ -244,3 +244,19 @@ fn linkage_sanity_check() {
     assert linker_private_weak_linkage as uint == rllvm::LLVMLinkerPrivateWeakLinkage;
     assert linker_private_weak_def_auto_linkage as uint == rllvm::LLVMLinkerPrivateWeakDefAutoLinkage;
 }
+
+enum visibility {
+    #[doc = "The GV is visible"]
+    default_visibility,
+    #[doc = "The GV is hidden"]
+    hidden_visibility,
+    #[doc = "The GV is protected"]
+    protected_visibility,
+}
+
+#[test]
+fn visibility_sanity_check() {
+    assert default_visibility as uint == rllvm::LLVMDefaultVisibility;
+    assert hidden_visibility as uint == rllvm::LLVMHiddenVisibility;
+    assert protected_visibility as uint == rllvm::LLVMProtectedVisibility;
+}
