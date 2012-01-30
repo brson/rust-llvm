@@ -187,3 +187,60 @@ enum opcode {
     landingpad      = 59,
     unwind          = 60,
 }
+
+// FIXME: LLVMTypeKind - rustc doesn't use it. Is it needed?
+
+enum linkage {
+    #[doc = "Externally visible function"]
+    external_linkage,
+    available_externally_linkage,
+    #[doc = "Keep one copy of function when linking (inline)"]
+    link_once_any_linkage,
+    #[doc = "Same, but only replaced by something equivalent."]
+    link_once_odr_linkage,
+    #[doc = "Keep one copy of function when linking (weak)"]
+    weak_any_linkage,
+    #[doc = "Same, but only replaced by something equivalent."]
+    weak_odr_linkage,
+    #[doc = "Special purpose, only applies to global arrays"]
+    appending_linkage,
+    #[doc = "Rename collisions when linking (static functions)"]
+    internal_linkage,
+    #[doc = "Like Internal, but omit from symbol table"]
+    private_linkage,
+    #[doc = "Function to be imported from DLL"]
+    dll_import_linkage,
+    #[doc = "Function to be accessible from DLL"]
+    dll_export_linkage,
+    external_weak_linkage,
+    #[deprecated]
+    ghost_linkage,
+    common_linkage,
+    #[doc = "Like private_linkage, but linker removes."]
+    linker_private_linkage,
+    #[doc = "Like linker_private_linkage, but is weak."]
+    linker_private_weak_linkage,
+    #[doc = "Like linker_private_weak, but possibly hidden."]
+    linker_private_weak_def_auto_linkage
+}
+
+#[test]
+fn linkage_sanity_check() {
+    assert external_linkage as uint == rllvm::LLVMExternalLinkage;
+    assert available_externally_linkage as uint == rllvm::LLVMAvailableExternallyLinkage;
+    assert link_once_any_linkage as uint == rllvm::LLVMLinkOnceAnyLinkage;
+    assert link_once_odr_linkage as uint == rllvm::LLVMLinkOnceODRLinkage;
+    assert weak_any_linkage as uint == rllvm::LLVMWeakAnyLinkage;
+    assert weak_odr_linkage as uint == rllvm::LLVMWeakODRLinkage;
+    assert appending_linkage as uint == rllvm::LLVMAppendingLinkage;
+    assert internal_linkage as uint == rllvm::LLVMInternalLinkage;
+    assert private_linkage as uint == rllvm::LLVMPrivateLinkage;
+    assert dll_import_linkage as uint == rllvm::LLVMDLLImportLinkage;
+    assert dll_export_linkage as uint == rllvm::LLVMDLLExportLinkage;
+    assert external_weak_linkage as uint == rllvm::LLVMExternalWeakLinkage;
+    assert ghost_linkage as uint == rllvm::LLVMGhostLinkage;
+    assert common_linkage as uint == rllvm::LLVMCommonLinkage;
+    assert linker_private_linkage as uint == rllvm::LLVMLinkerPrivateLinkage;
+    assert linker_private_weak_linkage as uint == rllvm::LLVMLinkerPrivateWeakLinkage;
+    assert linker_private_weak_def_auto_linkage as uint == rllvm::LLVMLinkerPrivateWeakDefAutoLinkage;
+}
