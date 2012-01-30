@@ -71,16 +71,16 @@ enum attribute {
     optimize_for_size_attribute = 1<<13,
     stack_protect_attribute     = 1<<14,
     stack_protect_req_attribute = 1<<15,
-    alignment_attribute         = 31<<16,
+    alignment                   = 31<<16,
     no_capture_attribute        = 1<<21,
     no_red_zone_attribute       = 1<<22,
     no_implicit_float_attribute = 1<<23,
     naked_attribute             = 1<<24,
     inline_hint_attribute       = 1<<25,
-    stack_alignment_attribute   = 7<<26,
-    returns_twice_attribute     = 1<<29,
-    uw_table_attribute          = 1<<30,
-    non_lazy_bind_attribute     = 1<<31,
+    stack_alignment             = 7<<26,
+    returns_twice               = 1<<29,
+    uw_table                    = 1<<30,
+    non_lazy_bind               = 1<<31,
 }
 
 #[test]
@@ -99,14 +99,14 @@ fn attribute_sanity_check() {
     assert always_inline_attribute as uint == rllvm::LLVMAlwaysInlineAttribute;
     assert optimize_for_size_attribute as uint == rllvm::LLVMOptimizeForSizeAttribute;
     assert stack_protect_attribute as uint == rllvm::LLVMStackProtectAttribute;
-    assert alignment_attribute as uint == rllvm::LLVMAlignmentAttribute;
+    assert alignment as uint == rllvm::LLVMAlignmentAttribute;
     assert no_capture_attribute as uint == rllvm::LLVMNoCaptureAttribute;
     assert no_red_zone_attribute as uint == rllvm::LLVMNoRedZoneAttribute;
     assert no_implicit_float_attribute as uint == rllvm::LLVMNoImplicitFloatAttribute;
     assert naked_attribute as uint == rllvm::LLVMNakedAttribute;
     assert inline_hint_attribute as uint == rllvm::LLVMInlineHintAttribute;
-    assert stack_alignment_attribute as uint == rllvm::LLVMStackAttribute;
-    assert returns_twice_attribute as uint == rllvm::LLVMReturnsTwiceAttribute;
-    assert uw_table_attribute as uint == rllvm::LLVMUWTableAttribute;
-    assert non_lazy_bind_attribute as uint == rllvm::LLVMNonLazyBindAttribute;
+    assert stack_alignment as uint == rllvm::LLVMStackAttribute;
+    assert returns_twice as uint == rllvm::LLVMReturnsTwiceAttribute;
+    assert uw_table as uint == rllvm::LLVMUWTableAttribute;
+    assert non_lazy_bind as uint == rllvm::LLVMNonLazyBindAttribute;
 }
