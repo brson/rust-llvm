@@ -260,3 +260,20 @@ fn visibility_sanity_check() {
     assert hidden_visibility as uint == rllvm::LLVMHiddenVisibility;
     assert protected_visibility as uint == rllvm::LLVMProtectedVisibility;
 }
+
+enum call_conv {
+    c_call_conv            = 0,
+    fast_call_conv         = 8,
+    cold_call_conv         = 9,
+    x86_stdcall_call_conv  = 64,
+    x86_fastcall_call_conv = 65,
+}
+
+#[test]
+fn call_conv_sanity_check() {
+    assert c_call_conv as uint == rllvm::LLVMCCallConv;
+    assert fast_call_conv as uint == rllvm::LLVMFastCallConv;
+    assert cold_call_conv as uint == rllvm::LLVMColdCallConv;
+    assert x86_stdcall_call_conv as uint == rllvm::LLVMX86StdcallCallConv;
+    assert x86_fastcall_call_conv as uint == rllvm::LLVMX86FastcallCallConv;
+}
