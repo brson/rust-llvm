@@ -277,3 +277,40 @@ fn call_conv_sanity_check() {
     assert x86_stdcall_call_conv as uint == rllvm::LLVMX86StdcallCallConv;
     assert x86_fastcall_call_conv as uint == rllvm::LLVMX86FastcallCallConv;
 }
+
+enum int_predicate {
+    #[doc = "equal"]
+    int_eq = 32,
+    #[doc = "not equal"]
+    int_ne,
+    #[doc = "unsigned greater than"]
+    int_ugt,
+    #[doc = "unsigned greater or equal"]
+    int_uge,
+    #[doc = "unsigned less than"]
+    int_ult,
+    #[doc = "unsigned less or equal"]
+    int_ule,
+    #[doc = "signed greater than"]
+    int_sgt,
+    #[doc = "signed greater or equal"]
+    int_sge,
+    #[doc = "signed less than"]
+    int_slt,
+    #[doc = "signed less or equal"]
+    int_sle,
+}
+
+#[test]
+fn int_predicate_sanity_check() {
+    assert int_eq as uint == rllvm::LLVMIntEQ;
+    assert int_ne as uint == rllvm::LLVMIntNE;
+    assert int_ugt as uint == rllvm::LLVMIntUGT;
+    assert int_uge as uint == rllvm::LLVMIntUGE;
+    assert int_ult as uint == rllvm::LLVMIntULT;
+    assert int_ule as uint == rllvm::LLVMIntULE;
+    assert int_sgt as uint == rllvm::LLVMIntSGT;
+    assert int_sge as uint == rllvm::LLVMIntSGE;
+    assert int_slt as uint == rllvm::LLVMIntSLT;
+    assert int_sle as uint == rllvm::LLVMIntSLE;
+}
