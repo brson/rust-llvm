@@ -110,3 +110,80 @@ fn attribute_sanity_check() {
     assert uw_table as uint == rllvm::LLVMUWTableAttribute;
     assert non_lazy_bind as uint == rllvm::LLVMNonLazyBindAttribute;
 }
+
+enum opcode {
+    /* Terminator instructions */
+    return          = 1,
+    br              = 2,
+    switch          = 3,
+    indirectbr      = 4,
+    invoke          = 5,
+    unreachable     = 7,
+
+    /* Standard binary operators */
+    add             = 8,
+    fadd            = 9,
+    sub             = 10,
+    fsub            = 11,
+    mul             = 12,
+    fmul            = 13,
+    udiv            = 14,
+    sdiv            = 15,
+    fdiv            = 16,
+    urem            = 17,
+    srem            = 18,
+    frem            = 19,
+
+    /* Logical operators */
+    shl             = 20,
+    lshr            = 21,
+    ashr            = 22,
+    and             = 23,
+    or              = 24,
+    xor             = 25,
+
+    /* Memory operators */
+    alloca          = 26,
+    load            = 27,
+    store           = 28,
+    getelementptr   = 29,
+
+    /* Cast operators */
+    trunc           = 30,
+    zext            = 31,
+    sext            = 32,
+    fptoui          = 33,
+    fptosi          = 34,
+    uitofp          = 35,
+    sitofp          = 36,
+    fptrunc         = 37,
+    fpext           = 38,
+    ptrtoint        = 39,
+    inttoptr        = 40,
+    bitcast         = 41,
+
+    /* Other operators */
+    icmp            = 42,
+    fcmp            = 43,
+    phi             = 44,
+    call            = 45,
+    select          = 46,
+    userop1         = 47,
+    userop2         = 48,
+    va_arg          = 49,
+    extractelement  = 50,
+    insertelement   = 51,
+    shufflevector   = 52,
+    extractvalue    = 53,
+    insertvalue     = 54,
+
+    /* Atomic operators */
+    fence           = 55,
+    cmpxchg         = 56,
+    atomicrmw       = 57,
+
+    /* Exception handling operators */
+    resume          = 58,
+    landingpad      = 59,
+    unwind          = 60,
+}
