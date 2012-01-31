@@ -400,3 +400,10 @@ fn real_predicate_sanity_check() {
     assert real_ule as uint == rllvm::LLVMRealULE;
     assert real_une as uint == rllvm::LLVMRealUNE;
 }
+
+enum landingpad_clause_ty {
+    #[doc = "A catch clause"]
+    landing_pad_catch,
+    #[doc = "A filter clause"]
+    landing_pad_filter
+}
