@@ -416,38 +416,31 @@ fn dispose_message(message: *ctypes::c_char) {
     rustllvm::LLVMDisposeMessage(message)
 }
 
-fn context_create() -> context_ref unsafe {
-    unsafe::reinterpret_cast(rllvm::llvm::LLVMContextCreate())
+fn context_create() -> context_ref {
+    rllvm::llvm::LLVMContextCreate().adapt()
 }
 
-fn get_global_context() -> context_ref unsafe {
-    unsafe::reinterpret_cast(rllvm::llvm::LLVMGetGlobalContext())
+fn get_global_context() -> context_ref {
+    rllvm::llvm::LLVMGetGlobalContext().adapt()
 }
 
-fn context_dispose(c: context_ref) unsafe {
-    rllvm::llvm::LLVMContextDispose(unsafe::reinterpret_cast(c))
+fn context_dispose(c: context_ref) {
+    rllvm::llvm::LLVMContextDispose(c.adapt())
 }
 
 fn get_md_kind_id_in_context(
     c: context_ref,
     name: *ctypes::c_char,
     slen: ctypes::unsigned
-) -> ctypes::unsigned unsafe {
-    rllvm::llvm::LLVMGetMDKindIDInContext(
-        unsafe::reinterpret_cast(c),
-        unsafe::reinterpret_cast(name),
-        slen
-    )
+) -> ctypes::unsigned {
+    rllvm::llvm::LLVMGetMDKindIDInContext(c.adapt(), name.adapt(), slen)
 }
 
 fn get_md_kind_id(
     name: *ctypes::c_char,
     slen: ctypes::unsigned
-) -> ctypes::unsigned unsafe {
-    rllvm::llvm::LLVMGetMDKindID(
-        unsafe::reinterpret_cast(name),
-        slen
-    )
+) -> ctypes::unsigned {
+    rllvm::llvm::LLVMGetMDKindID(name.adapt(), slen)
 }
 
 #[doc = "See llvm::Module::Module"]
@@ -459,36 +452,66 @@ fn module_create_with_name(module_id: *ctypes::c_char) -> module_ref {
 fn module_create_with_name_in_context(
     module_id: *ctypes::c_char,
     c: context_ref
-) -> module_ref unsafe {
-    unsafe::reinterpret_cast(
-        rllvm::llvm::LLVMModuleCreateWithNameInContext(
-            unsafe::reinterpret_cast(module_id),
-            unsafe::reinterpret_cast(c)
-        )
-    )
+) -> module_ref {
+    rllvm::llvm::LLVMModuleCreateWithNameInContext(
+        module_id.adapt(),
+        c.adapt()
+    ).adapt()
 }
 
 #[doc = "See llvm::Module::~Module"]
-fn dispose_module(m: module_ref) unsafe {
-    rllvm::llvm::LLVMDisposeModule(unsafe::reinterpret_cast(m))
+fn dispose_module(m: module_ref) {
+    rllvm::llvm::LLVMDisposeModule(m.adapt())
 }
 
 #[doc = "See Module::getDataLayout"]
-fn get_data_layout(m: module_ref) -> *ctypes::c_char unsafe {
-    unsafe::reinterpret_cast(
-        rllvm::llvm::LLVMGetDataLayout(
-            unsafe::reinterpret_cast(m)
-        )
-    )
+fn get_data_layout(m: module_ref) -> *ctypes::c_char {
+    rllvm::llvm::LLVMGetDataLayout(m.adapt()).adapt()
 }
 
-fn set_data_layout(m: module_ref, triple: *ctypes::c_char) unsafe {
-    rllvm::llvm::LLVMSetDataLayout(
-        unsafe::reinterpret_cast(m),
-        unsafe::reinterpret_cast(triple)
-    )
+fn set_data_layout(m: module_ref, triple: *ctypes::c_char) {
+    rllvm::llvm::LLVMSetDataLayout(m.adapt(), triple.adapt())
 }
     
+iface adapter<T> {
+    fn adapt() -> T;
+}
+
+impl of adapter<str::sbuf> for *ctypes::c_char {
+    fn adapt() -> str::sbuf unsafe {
+        unsafe::reinterpret_cast(self)
+    }
+}
+
+impl of adapter<*ctypes::c_char> for str::sbuf {
+    fn adapt() -> *ctypes::c_char unsafe {
+        unsafe::reinterpret_cast(self)
+    }
+}
+
+impl of adapter<rllvm::llvm::ModuleRef> for module_ref {
+    fn adapt() -> rllvm::llvm::ModuleRef unsafe {
+        unsafe::reinterpret_cast(self)
+    }
+}
+
+impl of adapter<module_ref> for rllvm::llvm::ModuleRef {
+    fn adapt() -> module_ref unsafe {
+        unsafe::reinterpret_cast(self)
+    }
+}
+
+impl of adapter<rllvm::llvm::ContextRef> for context_ref {
+    fn adapt() -> rllvm::llvm::ContextRef unsafe {
+        unsafe::reinterpret_cast(self)
+    }
+}
+
+impl of adapter<context_ref> for rllvm::llvm::ContextRef {
+    fn adapt() -> context_ref unsafe {
+        unsafe::reinterpret_cast(self)
+    }
+}
 
 native mod rustllvm {
     fn LLVMInitializeCore(R: pass_registry_ref);
