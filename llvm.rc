@@ -30,3 +30,4 @@ import rllvm = rustc::lib::llvm;
 export core;
 
 mod core;
+mod adapters;
