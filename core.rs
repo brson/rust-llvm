@@ -314,3 +314,56 @@ fn int_predicate_sanity_check() {
     assert int_slt as uint == rllvm::LLVMIntSLT;
     assert int_sle as uint == rllvm::LLVMIntSLE;
 }
+
+enum real_predicate {
+    #[doc = "Always false (always folded)"]
+    real_predicate_false,
+    #[doc = "True if ordered and equal"]
+    real_oeq,
+    #[doc = "True if ordered and greater than"]
+    real_ogt,
+    #[doc = "True if ordered and greater than or equal"]
+    real_oge,
+    #[doc = "True if ordered and less than"]
+    real_olt,
+    #[doc = "True if ordered and less than or equal"]
+    real_ole,
+    #[doc = "True if ordered and operands are unequal"]
+    real_one,
+    #[doc = "True if ordered (no nans)"]
+    real_ord,
+    #[doc = "True if unordered: isnan(X) | isnan(Y)"]
+    real_uno,
+    #[doc = "True if unordered or equal"]
+    real_ueq,
+    #[doc = "True if unordered or greater than"]
+    real_ugt,
+    #[doc = "True if unordered, greater than, or equal"]
+    real_uge,
+    #[doc = "True if unordered or less than"]
+    real_ult,
+    #[doc = "True if unordered, less than, or equal"]
+    real_ule,
+    #[doc = "True if unordered or not equal"]
+    real_une,
+    #[doc = "Always true (always folded)"]
+    real_predicate_true,
+}
+
+#[test]
+fn real_predicate_sanity_check() {
+    assert real_oeq as uint == rllvm::LLVMRealOEQ;
+    assert real_ogt as uint == rllvm::LLVMRealOGT;
+    assert real_oge as uint == rllvm::LLVMRealOGE;
+    assert real_olt as uint == rllvm::LLVMRealOLT;
+    assert real_ole as uint == rllvm::LLVMRealOLE;
+    assert real_one as uint == rllvm::LLVMRealONE;
+    assert real_ord as uint == rllvm::LLVMRealORD;
+    assert real_uno as uint == rllvm::LLVMRealUNO;
+    assert real_ueq as uint == rllvm::LLVMRealUEQ;
+    assert real_ugt as uint == rllvm::LLVMRealUGT;
+    assert real_uge as uint == rllvm::LLVMRealUGE;
+    assert real_ult as uint == rllvm::LLVMRealULT;
+    assert real_ule as uint == rllvm::LLVMRealULE;
+    assert real_une as uint == rllvm::LLVMRealUNE;
+}
