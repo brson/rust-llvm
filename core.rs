@@ -536,6 +536,34 @@ fn int_type_in_context(c: context_ref, num_bits: ctypes::unsigned) -> type_ref {
     rllvm::llvm::LLVMIntTypeInContext(c.adapt(), num_bits).adapt()
 }
 
+fn int1_type() -> type_ref {
+    rllvm::llvm::LLVMInt1Type().adapt()
+}
+
+fn int8_type() -> type_ref {
+    rllvm::llvm::LLVMInt8Type().adapt()
+}
+
+fn int16_type() -> type_ref {
+    rllvm::llvm::LLVMInt16Type().adapt()
+}
+
+fn int32_type() -> type_ref {
+    rllvm::llvm::LLVMInt32Type().adapt()
+}
+
+fn int64_type() -> type_ref {
+    rllvm::llvm::LLVMInt64Type().adapt()
+}
+
+fn int_type(num_bits: ctypes::unsigned) -> type_ref {
+    rllvm::llvm::LLVMIntType(num_bits).adapt()
+}
+
+fn get_int_type_width(integer_ty: type_ref) -> ctypes::unsigned {
+    rllvm::llvm::LLVMGetIntTypeWidth(integer_ty.adapt())
+}
+
 native mod rustllvm {
     fn LLVMInitializeCore(R: pass_registry_ref);
     fn LLVMDisposeMessage(Message: *ctypes::c_char);
