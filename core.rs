@@ -564,10 +564,60 @@ fn get_int_type_width(integer_ty: type_ref) -> ctypes::unsigned {
     rllvm::llvm::LLVMGetIntTypeWidth(integer_ty.adapt())
 }
 
+fn half_type_in_context(c: context_ref) -> type_ref {
+    rustllvm::LLVMHalfTypeInContext(c)
+}
+
+fn float_type_in_context(c: context_ref) -> type_ref {
+    rllvm::llvm::LLVMFloatTypeInContext(c.adapt()).adapt()
+}
+
+fn double_type_in_context(c: context_ref) -> type_ref {
+    rllvm::llvm::LLVMDoubleTypeInContext(c.adapt()).adapt()
+}
+
+fn x86_fp80_type_in_context(c: context_ref) -> type_ref {
+    rllvm::llvm::LLVMX86FP80TypeInContext(c.adapt()).adapt()
+}
+
+fn fp128_type_in_context(c: context_ref) -> type_ref {
+    rllvm::llvm::LLVMFP128TypeInContext(c.adapt()).adapt()
+}
+
+fn ppc_fp128_type_in_context(c: context_ref) -> type_ref {
+    rllvm::llvm::LLVMPPCFP128TypeInContext(c.adapt()).adapt()
+}
+
+fn half_type() -> type_ref {
+    rustllvm::LLVMHalfType()
+}
+
+fn float_type() -> type_ref {
+    rllvm::llvm::LLVMFloatType().adapt()
+}
+
+fn double_type() -> type_ref {
+    rllvm::llvm::LLVMDoubleType().adapt()
+}
+
+fn x86_fp80_type() -> type_ref {
+    rllvm::llvm::LLVMX86FP80Type().adapt()
+}
+
+fn fp128_type() -> type_ref {
+    rllvm::llvm::LLVMFP128Type().adapt()
+}
+
+fn ppc_fp128_type() -> type_ref {
+    rllvm::llvm::LLVMPPCFP128Type().adapt()
+}
+
 native mod rustllvm {
     fn LLVMInitializeCore(R: pass_registry_ref);
     fn LLVMDisposeMessage(Message: *ctypes::c_char);
     fn LLVMModuleCreateWithName(ModuleID: *ctypes::c_char) -> module_ref;
     fn LLVMGetModuleContext(M: module_ref) -> context_ref;
     fn LLVMTypeIsSized(Ty: type_ref) -> llbool;
+    fn LLVMHalfTypeInContext(C: context_ref) -> type_ref;
+    fn LLVMHalfType() -> type_ref;
 }
