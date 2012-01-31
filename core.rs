@@ -2,6 +2,8 @@ use core;
 import core::*;
 import adapters::*;
 
+type llbool = ctypes::c_int;
+
 enum opaque_ref = *ctypes::void;
 
 #[doc = "
@@ -533,8 +535,6 @@ fn int64_type_in_context(c: context_ref) -> type_ref {
 fn int_type_in_context(c: context_ref, num_bits: ctypes::unsigned) -> type_ref {
     rllvm::llvm::LLVMIntTypeInContext(c.adapt(), num_bits).adapt()
 }
-
-type llbool = ctypes::c_int;
 
 native mod rustllvm {
     fn LLVMInitializeCore(R: pass_registry_ref);
