@@ -188,7 +188,40 @@ enum opcode {
     unwind          = 60,
 }
 
-// FIXME: LLVMTypeKind - rustc doesn't use it. Is it needed?
+enum type_kind {
+    #[doc = "type with no size"]
+    void_type_kind,
+    #[doc = "16 bit floating point type"]
+    half_type_kind,
+    #[doc = "32 bit floating point type"]
+    float_type_kind,
+    #[doc = "64 bit floating point type"]
+    double_type_kind,
+    #[doc = "80 bit floating point type (X87)"]
+    x86_fp80_type_kind,
+    #[doc = "128 bit floating point type (112-bit mantissa)"]
+    fp128_type_kind,
+    #[doc = "128 bit floating point type (two 64-bits)"]
+    ppc_fp128_type_kind,
+    #[doc = "Labels"]
+    label_type_kind,
+    #[doc = "Arbitrary bit width integers"]
+    integer_type_kind,
+    #[doc = "Functions"]
+    function_type_kind,
+    #[doc = "Structures"]
+    struct_type_kind,
+    #[doc = "Arrays"]
+    array_type_kind,
+    #[doc = "Pointers"]
+    pointer_type_kind,
+    #[doc = "SIMD 'packed' format, or other vector type"]
+    vector_type_kind,
+    #[doc = "Metadata"]
+    metadata_type_kind,
+    #[doc = "X86 MMX"]
+    x86_mmx_type_kind,
+}
 
 enum linkage {
     #[doc = "Externally visible function"]
