@@ -2,8 +2,6 @@ use core;
 import core::*;
 import adapters::*;
 
-enum llbool = ctypes::c_int;
-
 enum opaque_ref = *ctypes::void;
 
 #[doc = "
@@ -474,8 +472,74 @@ fn set_data_layout(m: module_ref, triple: *ctypes::c_char) {
     rllvm::llvm::LLVMSetDataLayout(m.adapt(), triple.adapt())
 }
 
+#[doc = "See Module::getTargetTriple"]
+fn get_target(m: module_ref) -> *ctypes::c_char {
+    rllvm::llvm::LLVMGetTarget(m.adapt()).adapt()
+}
+
+fn set_target(m: module_ref, triple: *ctypes::c_char) {
+    rllvm::llvm::LLVMSetTarget(m.adapt(), triple.adapt())
+}
+
+#[doc = "See Module::dump"]
+fn dump_module(m: module_ref) {
+    rllvm::llvm::LLVMDumpModule(m.adapt())
+}
+
+#[doc = "See Module::setModuleInlineAsm"]
+fn set_module_inline_asm(m: module_ref, asm: *ctypes::c_char) {
+    rllvm::llvm::LLVMSetModuleInlineAsm(m.adapt(), asm.adapt())
+}
+
+#[doc = "See Module::getContext"]
+fn get_module_context(m: module_ref) -> context_ref {
+    rustllvm::LLVMGetModuleContext(m)
+}
+
+#[doc = "See llvm::LLVMTypeKind::getTypeID"]
+fn get_type_kind(ty: type_ref) -> type_kind {
+    rllvm::llvm::LLVMGetTypeKind(ty.adapt()).adapt()
+}
+
+fn type_is_sized(ty: type_ref) -> bool {
+    rustllvm::LLVMTypeIsSized(ty) as bool
+}
+
+#[doc = "See llvm::LLVMType::getContext"]
+fn get_type_context(ty: type_ref) -> context_ref {
+    rllvm::llvm::LLVMGetTypeContext(ty.adapt()).adapt()
+}
+
+fn int1_type_in_context(c: context_ref) -> type_ref {
+    rllvm::llvm::LLVMInt1TypeInContext(c.adapt()).adapt()
+}
+
+fn int8_type_in_context(c: context_ref) -> type_ref {
+    rllvm::llvm::LLVMInt8TypeInContext(c.adapt()).adapt()
+}
+
+fn int16_type_in_context(c: context_ref) -> type_ref {
+    rllvm::llvm::LLVMInt16TypeInContext(c.adapt()).adapt()
+}
+
+fn int32_type_in_context(c: context_ref) -> type_ref {
+    rllvm::llvm::LLVMInt32TypeInContext(c.adapt()).adapt()
+}
+
+fn int64_type_in_context(c: context_ref) -> type_ref {
+    rllvm::llvm::LLVMInt64TypeInContext(c.adapt()).adapt()
+}
+
+fn int_type_in_context(c: context_ref, num_bits: ctypes::unsigned) -> type_ref {
+    rllvm::llvm::LLVMIntTypeInContext(c.adapt(), num_bits).adapt()
+}
+
+type llbool = ctypes::c_int;
+
 native mod rustllvm {
     fn LLVMInitializeCore(R: pass_registry_ref);
     fn LLVMDisposeMessage(Message: *ctypes::c_char);
     fn LLVMModuleCreateWithName(ModuleID: *ctypes::c_char) -> module_ref;
+    fn LLVMGetModuleContext(M: module_ref) -> context_ref;
+    fn LLVMTypeIsSized(Ty: type_ref) -> llbool;
 }

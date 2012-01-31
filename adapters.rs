@@ -40,3 +40,21 @@ impl of adapter<::core::context_ref> for rllvm::llvm::ContextRef {
         unsafe::reinterpret_cast(self)
     }
 }
+
+impl of adapter<rllvm::llvm::TypeRef> for ::core::type_ref {
+    fn adapt() -> rllvm::llvm::TypeRef unsafe {
+        unsafe::reinterpret_cast(self)
+    }
+}
+
+impl of adapter<::core::type_ref> for rllvm::llvm::TypeRef {
+    fn adapt() -> ::core::type_ref unsafe {
+        unsafe::reinterpret_cast(self)
+    }
+}
+
+impl of adapter<::core::type_kind> for ctypes::c_int {
+    fn adapt() -> ::core::type_kind unsafe {
+        unsafe::reinterpret_cast(self as ctypes::enum)
+    }
+}
