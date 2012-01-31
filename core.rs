@@ -407,3 +407,91 @@ enum landingpad_clause_ty {
     #[doc = "A filter clause"]
     landing_pad_filter
 }
+
+fn initialize_core(r: pass_registry_ref) {
+    rustllvm::LLVMInitializeCore(r)
+}
+
+fn dispose_message(message: *ctypes::c_char) {
+    rustllvm::LLVMDisposeMessage(message)
+}
+
+fn context_create() -> context_ref unsafe {
+    unsafe::reinterpret_cast(rllvm::llvm::LLVMContextCreate())
+}
+
+fn get_global_context() -> context_ref unsafe {
+    unsafe::reinterpret_cast(rllvm::llvm::LLVMGetGlobalContext())
+}
+
+fn context_dispose(c: context_ref) unsafe {
+    rllvm::llvm::LLVMContextDispose(unsafe::reinterpret_cast(c))
+}
+
+fn get_md_kind_id_in_context(
+    c: context_ref,
+    name: *ctypes::c_char,
+    slen: ctypes::unsigned
+) -> ctypes::unsigned unsafe {
+    rllvm::llvm::LLVMGetMDKindIDInContext(
+        unsafe::reinterpret_cast(c),
+        unsafe::reinterpret_cast(name),
+        slen
+    )
+}
+
+fn get_md_kind_id(
+    name: *ctypes::c_char,
+    slen: ctypes::unsigned
+) -> ctypes::unsigned unsafe {
+    rllvm::llvm::LLVMGetMDKindID(
+        unsafe::reinterpret_cast(name),
+        slen
+    )
+}
+
+#[doc = "See llvm::Module::Module"]
+fn module_create_with_name(module_id: *ctypes::c_char) -> module_ref {
+    rustllvm::LLVMModuleCreateWithName(module_id)
+}
+
+#[doc = "See llvm::Module::Module"]
+fn module_create_with_name_in_context(
+    module_id: *ctypes::c_char,
+    c: context_ref
+) -> module_ref unsafe {
+    unsafe::reinterpret_cast(
+        rllvm::llvm::LLVMModuleCreateWithNameInContext(
+            unsafe::reinterpret_cast(module_id),
+            unsafe::reinterpret_cast(c)
+        )
+    )
+}
+
+#[doc = "See llvm::Module::~Module"]
+fn dispose_module(m: module_ref) unsafe {
+    rllvm::llvm::LLVMDisposeModule(unsafe::reinterpret_cast(m))
+}
+
+#[doc = "See Module::getDataLayout"]
+fn get_data_layout(m: module_ref) -> *ctypes::c_char unsafe {
+    unsafe::reinterpret_cast(
+        rllvm::llvm::LLVMGetDataLayout(
+            unsafe::reinterpret_cast(m)
+        )
+    )
+}
+
+fn set_data_layout(m: module_ref, triple: *ctypes::c_char) unsafe {
+    rllvm::llvm::LLVMSetDataLayout(
+        unsafe::reinterpret_cast(m),
+        unsafe::reinterpret_cast(triple)
+    )
+}
+    
+
+native mod rustllvm {
+    fn LLVMInitializeCore(R: pass_registry_ref);
+    fn LLVMDisposeMessage(Message: *ctypes::c_char);
+    fn LLVMModuleCreateWithName(ModuleID: *ctypes::c_char) -> module_ref;
+}
