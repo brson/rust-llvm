@@ -501,8 +501,8 @@ fn get_type_kind(ty: type_ref) -> type_kind {
     rllvm::llvm::LLVMGetTypeKind(ty.adapt()).adapt()
 }
 
-fn type_is_sized(ty: type_ref) -> bool {
-    rustllvm::LLVMTypeIsSized(ty) as bool
+fn type_is_sized(ty: type_ref) -> llbool {
+    rustllvm::LLVMTypeIsSized(ty)
 }
 
 #[doc = "See llvm::LLVMType::getContext"]
