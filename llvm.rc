@@ -18,16 +18,5 @@ crate that is visible to cargo.
 
 ")];
 
-// We have a module named core and this conflicts with it. As a workaround
-// we'll 'use core; import core::*' in every submodule.
-#[no_core];
-
 use std;
-use rustc;
 
-import rllvm = rustc::lib::llvm;
-
-export core;
-
-mod core;
-mod adapters;
