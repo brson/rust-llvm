@@ -4,8 +4,8 @@ import libc::{c_char, c_int, c_uint, c_longlong, c_ulonglong};
 
 type Opcode = u32;
 type Bool = c_uint;
-const True: Bool = 1u32; // FIXME: should be '1 as Bool'
-const False: Bool = 0u32;
+const True: Bool = 1 as Bool;
+const False: Bool = 0 as Bool;
 
 // Consts for the LLVM CallConv type, pre-cast to uint.
 
@@ -75,9 +75,7 @@ enum Attribute {
     NonLazyBindAttribute = 2147483648,
 }
 
-// Consts for the LLVM IntPredicate type, pre-cast to uint.
-// FIXME: as above.
-
+// enum for the LLVM IntPredicate type
 enum IntPredicate {
     IntEQ = 32,
     IntNE = 33,
@@ -91,9 +89,7 @@ enum IntPredicate {
     IntSLE = 41,
 }
 
-// Consts for the LLVM RealPredicate type, pre-case to uint.
-// FIXME: as above.
-
+// enum for the LLVM RealPredicate type
 enum RealPredicate {
     RealOEQ = 1,
     RealOGT = 2,
@@ -109,6 +105,59 @@ enum RealPredicate {
     RealULT = 12,
     RealULE = 13,
     RealUNE = 14,
+}
+
+// enum for the LLVM TypeKind type - must stay in sync with the def of
+// LLVMTypeKind in llvm/include/llvm-c/Core.h
+enum TypeKind {
+    Void      = 0,
+    Half      = 1,
+    Float     = 2,
+    Double    = 3,
+    X86_FP80  = 4,
+    FP128     = 5,
+    PPC_FP128 = 6,
+    Label     = 7,
+    Integer   = 8,
+    Function  = 9,
+    Struct    = 10,
+    Array     = 11,
+    Pointer   = 12,
+    Vector    = 13,
+    Metadata  = 14,
+    X86_MMX   = 15
+}
+
+enum AtomicBinOp {
+    Xchg = 0,
+    Add  = 1,
+    Sub  = 2,
+    And  = 3,
+    Nand = 4,
+    Or   = 5,
+    Xor  = 6,
+    Max  = 7,
+    Min  = 8,
+    UMax = 9,
+    UMin = 10,
+}
+
+enum AtomicOrdering {
+    NotAtomic = 0,
+    Unordered = 1,
+    Monotonic = 2,
+    // Consume = 3,  // Not specified yet.
+    Acquire = 4,
+    Release = 5,
+    AcquireRelease = 6,
+    SequentiallyConsistent = 7
+}
+
+// FIXME: Not used right now, but will be once #2334 is fixed
+// Consts for the LLVMCodeGenFileType type (in include/llvm/c/TargetMachine.h)
+enum FileType {
+    AssemblyFile = 0,
+    ObjectFile = 1
 }
 
 // Opaque pointer types
@@ -142,7 +191,7 @@ type SectionIteratorRef = *SectionIterator_opaque;
 #[link_args = "-Lrustllvm"]
 #[link_name = "rustllvm"]
 #[abi = "cdecl"]
-native mod llvm {
+extern mod llvm {
     /* Create and destroy contexts. */
     fn LLVMContextCreate() -> ContextRef;
     fn LLVMGetGlobalContext() -> ContextRef;
@@ -171,12 +220,7 @@ native mod llvm {
     fn LLVMSetModuleInlineAsm(M: ModuleRef, Asm: *c_char);
 
     /** See llvm::LLVMTypeKind::getTypeID. */
-
-    // FIXME: returning int rather than TypeKind because
-    // we directly inspect the values, and casting from
-    // a native doesn't work yet (only *to* a native).
-
-    fn LLVMGetTypeKind(Ty: TypeRef) -> c_int;
+    fn LLVMGetTypeKind(Ty: TypeRef) -> TypeKind;
 
     /** See llvm::LLVMType::getContext. */
     fn LLVMGetTypeContext(Ty: TypeRef) -> ContextRef;
@@ -294,9 +338,7 @@ native mod llvm {
     /* Operations on scalar constants */
     fn LLVMConstInt(IntTy: TypeRef, N: c_ulonglong, SignExtend: Bool) ->
        ValueRef;
-    // FIXME: radix is actually u8, but our native layer can't handle this
-    // yet.  lucky for us we're little-endian. Small miracles.
-    fn LLVMConstIntOfString(IntTy: TypeRef, Text: *c_char, Radix: c_int) ->
+    fn LLVMConstIntOfString(IntTy: TypeRef, Text: *c_char, Radix: u8) ->
        ValueRef;
     fn LLVMConstIntOfStringAndSize(IntTy: TypeRef, Text: *c_char,
                                    SLen: c_uint,
@@ -474,9 +516,11 @@ native mod llvm {
     fn LLVMSetFunctionCallConv(Fn: ValueRef, CC: c_uint);
     fn LLVMGetGC(Fn: ValueRef) -> *c_char;
     fn LLVMSetGC(Fn: ValueRef, Name: *c_char);
-    fn LLVMAddFunctionAttr(Fn: ValueRef, PA: c_uint, HighPA: c_uint);
-    fn LLVMGetFunctionAttr(Fn: ValueRef) -> c_uint;
-    fn LLVMRemoveFunctionAttr(Fn: ValueRef, PA: c_uint, HighPA: c_uint);
+    fn LLVMAddFunctionAttr(Fn: ValueRef, PA: c_ulonglong, HighPA:
+                           c_ulonglong);
+    fn LLVMGetFunctionAttr(Fn: ValueRef) -> c_ulonglong;
+    fn LLVMRemoveFunctionAttr(Fn: ValueRef, PA: c_ulonglong, HighPA:
+                              c_ulonglong);
 
     /* Operations on parameters */
     fn LLVMCountParams(Fn: ValueRef) -> c_uint;
@@ -753,6 +797,11 @@ native mod llvm {
     fn LLVMBuildPtrDiff(B: BuilderRef, LHS: ValueRef, RHS: ValueRef,
                         Name: *c_char) -> ValueRef;
 
+    /* Atomic Operations */
+    fn LLVMBuildAtomicRMW(B: BuilderRef, ++Op: AtomicBinOp,
+                          LHS: ValueRef, RHS: ValueRef,
+                          ++Order: AtomicOrdering) -> ValueRef;
+
     /* Selected entries from the downcasts. */
     fn LLVMIsATerminatorInst(Inst: ValueRef) -> ValueRef;
 
@@ -764,11 +813,26 @@ native mod llvm {
     /** Adds the target data to the given pass manager. The pass manager
         references the target data only weakly. */
     fn LLVMAddTargetData(TD: TargetDataRef, PM: PassManagerRef);
-    /** Returns the size of a type. FIXME: rv is actually a C_Ulonglong! */
-    fn LLVMStoreSizeOfType(TD: TargetDataRef, Ty: TypeRef) -> c_uint;
-    /** Returns the alignment of a type. */
+    /** Number of bytes clobbered when doing a Store to *T. */
+    fn LLVMStoreSizeOfType(TD: TargetDataRef, Ty: TypeRef) -> c_ulonglong;
+
+    /** Number of bytes clobbered when doing a Store to *T. */
+    fn LLVMSizeOfTypeInBits(TD: TargetDataRef, Ty: TypeRef) -> c_ulonglong;
+
+    /** Distance between successive elements in an array of T.
+    Includes ABI padding. */
+    fn LLVMABISizeOfType(TD: TargetDataRef, Ty: TypeRef) -> c_uint;
+
+    /** Returns the preferred alignment of a type. */
     fn LLVMPreferredAlignmentOfType(TD: TargetDataRef,
                                     Ty: TypeRef) -> c_uint;
+    /** Returns the minimum alignment of a type. */
+    fn LLVMABIAlignmentOfType(TD: TargetDataRef,
+                              Ty: TypeRef) -> c_uint;
+    /** Returns the minimum alignment of a type when part of a call frame. */
+    fn LLVMCallFrameAlignmentOfType(TD: TargetDataRef,
+                                    Ty: TypeRef) -> c_uint;
+
     /** Disposes target data. */
     fn LLVMDisposeTargetData(TD: TargetDataRef);
 
@@ -871,10 +935,11 @@ native mod llvm {
     fn LLVMRustCreateMemoryBufferWithContentsOfFile(Path: *c_char) ->
        MemoryBufferRef;
 
-    /* FIXME: The FileType is an enum.*/
     fn LLVMRustWriteOutputFile(PM: PassManagerRef, M: ModuleRef,
                                Triple: *c_char,
-                               Output: *c_char, FileType: c_int,
+                               // FIXME: When #2334 is fixed, change
+                               // c_uint to FileType
+                               Output: *c_char, FileType: c_uint,
                                OptLevel: c_int,
                                EnableSegmentedStacks: bool);
 
@@ -887,10 +952,6 @@ native mod llvm {
 
     /** Parses LLVM asm in the given file */
     fn LLVMRustParseAssemblyFile(Filename: *c_char) -> ModuleRef;
-
-    /** FiXME: Hacky adaptor for lack of c_ulonglong in FFI: */
-    fn LLVMRustConstInt(IntTy: TypeRef, N_hi: c_uint, N_lo: c_uint,
-                        SignExtend: Bool) -> ValueRef;
 
     fn LLVMRustAddPrintModulePass(PM: PassManagerRef, M: ModuleRef,
                                   Output: *c_char);
@@ -950,24 +1011,25 @@ fn mk_type_names() -> type_names {
 }
 
 fn type_to_str(names: type_names, ty: TypeRef) -> str {
-    ret type_to_str_inner(names, [], ty);
+    ret type_to_str_inner(names, ~[], ty);
 }
 
-fn type_to_str_inner(names: type_names, outer0: [TypeRef], ty: TypeRef) ->
+fn type_to_str_inner(names: type_names, outer0: ~[TypeRef], ty: TypeRef) ->
    str {
     alt type_has_name(names, ty) {
       option::some(n) { ret n; }
       _ {}
     }
 
-    let outer = outer0 + [ty];
+    let outer = vec::append_one(outer0, ty);
 
-    let kind: int = llvm::LLVMGetTypeKind(ty) as int;
+    let kind = llvm::LLVMGetTypeKind(ty);
 
-    fn tys_str(names: type_names, outer: [TypeRef], tys: [TypeRef]) -> str {
+    fn tys_str(names: type_names, outer: ~[TypeRef],
+               tys: ~[TypeRef]) -> str {
         let mut s: str = "";
         let mut first: bool = true;
-        for t: TypeRef in tys {
+        for tys.each |t| {
             if first { first = false; } else { s += ", "; }
             s += type_to_str_inner(names, outer, t);
         }
@@ -975,24 +1037,22 @@ fn type_to_str_inner(names: type_names, outer0: [TypeRef], ty: TypeRef) ->
     }
 
     alt kind {
-      // FIXME: more enum-as-int constants determined from Core::h;
-      // horrible, horrible. Complete as needed.
-      0 { ret "Void"; }
-      1 { ret "Half"; }
-      2 { ret "Float"; }
-      3 { ret "Double"; }
-      4 { ret "X86_FP80"; }
-      5 { ret "FP128"; }
-      6 { ret "PPC_FP128"; }
-      7 { ret "Label"; }
-      8 {
+      Void { ret "Void"; }
+      Half { ret "Half"; }
+      Float { ret "Float"; }
+      Double { ret "Double"; }
+      X86_FP80 { ret "X86_FP80"; }
+      FP128 { ret "FP128"; }
+      PPC_FP128 { ret "PPC_FP128"; }
+      Label { ret "Label"; }
+      Integer {
         ret "i" + int::str(llvm::LLVMGetIntTypeWidth(ty) as int);
       }
-      9 {
+      Function {
         let mut s = "fn(";
         let out_ty: TypeRef = llvm::LLVMGetReturnType(ty);
         let n_args = llvm::LLVMCountParamTypes(ty) as uint;
-        let args: [TypeRef] = vec::from_elem::<TypeRef>(n_args, 0 as TypeRef);
+        let args = vec::from_elem(n_args, 0 as TypeRef);
         unsafe {
             llvm::LLVMGetParamTypes(ty, vec::unsafe::to_ptr(args));
         }
@@ -1001,10 +1061,10 @@ fn type_to_str_inner(names: type_names, outer0: [TypeRef], ty: TypeRef) ->
         s += type_to_str_inner(names, outer, out_ty);
         ret s;
       }
-      10 {
+      Struct {
         let mut s: str = "{";
         let n_elts = llvm::LLVMCountStructElementTypes(ty) as uint;
-        let elts: [TypeRef] = vec::from_elem::<TypeRef>(n_elts, 0 as TypeRef);
+        let elts = vec::from_elem(n_elts, 0 as TypeRef);
         unsafe {
             llvm::LLVMGetStructElementTypes(ty, vec::unsafe::to_ptr(elts));
         }
@@ -1012,27 +1072,34 @@ fn type_to_str_inner(names: type_names, outer0: [TypeRef], ty: TypeRef) ->
         s += "}";
         ret s;
       }
-      11 {
+      Array {
         let el_ty = llvm::LLVMGetElementType(ty);
         ret "[" + type_to_str_inner(names, outer, el_ty) + " x " +
             uint::str(llvm::LLVMGetArrayLength(ty) as uint) + "]";
       }
-      12 {
+      Pointer {
         let mut i: uint = 0u;
-        for tout: TypeRef in outer0 {
+        for outer0.each |tout| {
             i += 1u;
             if tout as int == ty as int {
                 let n: uint = vec::len::<TypeRef>(outer0) - i;
                 ret "*\\" + int::str(n as int);
             }
         }
-        ret "*" +
+        let addrstr = {
+            let addrspace = llvm::LLVMGetPointerAddressSpace(ty) as uint;
+            if addrspace == 0u {
+                ""
+            } else {
+                #fmt("addrspace(%u)", addrspace)
+            }
+        };
+        ret addrstr + "*" +
                 type_to_str_inner(names, outer, llvm::LLVMGetElementType(ty));
       }
-      13 { ret "Vector"; }
-      14 { ret "Metadata"; }
-      15 { ret "X86_MMAX"; }
-      _ { #error("unknown TypeKind %d", kind as int); fail; }
+      Vector { ret "Vector"; }
+      Metadata { ret "Metadata"; }
+      X86_MMX { ret "X86_MMAX"; }
     }
 }
 
@@ -1046,7 +1113,7 @@ fn float_width(llt: TypeRef) -> uint {
         };
 }
 
-fn fn_ty_param_tys(fn_ty: TypeRef) -> [TypeRef] unsafe {
+fn fn_ty_param_tys(fn_ty: TypeRef) -> ~[TypeRef] unsafe {
     let args = vec::from_elem(llvm::LLVMCountParamTypes(fn_ty) as uint,
                              0 as TypeRef);
     llvm::LLVMGetParamTypes(fn_ty, vec::unsafe::to_ptr(args));
@@ -1056,22 +1123,26 @@ fn fn_ty_param_tys(fn_ty: TypeRef) -> [TypeRef] unsafe {
 
 /* Memory-managed interface to target data. */
 
-resource target_data_res(TD: TargetDataRef) {
-    llvm::LLVMDisposeTargetData(TD);
+class target_data_res {
+    let TD: TargetDataRef;
+    new(TD: TargetDataRef) { self.TD = TD; }
+    drop { llvm::LLVMDisposeTargetData(self.TD); }
 }
 
 type target_data = {lltd: TargetDataRef, dtor: @target_data_res};
 
 fn mk_target_data(string_rep: str) -> target_data {
     let lltd =
-        str::as_c_str(string_rep, {|buf| llvm::LLVMCreateTargetData(buf) });
+        str::as_c_str(string_rep, |buf| llvm::LLVMCreateTargetData(buf) );
     ret {lltd: lltd, dtor: @target_data_res(lltd)};
 }
 
 /* Memory-managed interface to pass managers. */
 
-resource pass_manager_res(PM: PassManagerRef) {
-    llvm::LLVMDisposePassManager(PM);
+class pass_manager_res {
+    let PM: PassManagerRef;
+    new(PM: PassManagerRef) { self.PM = PM; }
+    drop { llvm::LLVMDisposePassManager(self.PM); }
 }
 
 type pass_manager = {llpm: PassManagerRef, dtor: @pass_manager_res};
@@ -1083,8 +1154,10 @@ fn mk_pass_manager() -> pass_manager {
 
 /* Memory-managed interface to object files. */
 
-resource object_file_res(ObjectFile: ObjectFileRef) {
-    llvm::LLVMDisposeObjectFile(ObjectFile);
+class object_file_res {
+    let ObjectFile: ObjectFileRef;
+    new(ObjectFile: ObjectFileRef) { self.ObjectFile = ObjectFile; }
+    drop { llvm::LLVMDisposeObjectFile(self.ObjectFile); }
 }
 
 type object_file = {llof: ObjectFileRef, dtor: @object_file_res};
@@ -1097,8 +1170,10 @@ fn mk_object_file(llmb: MemoryBufferRef) -> option<object_file> {
 
 /* Memory-managed interface to section iterators. */
 
-resource section_iter_res(SI: SectionIteratorRef) {
-    llvm::LLVMDisposeSectionIterator(SI);
+class section_iter_res {
+    let SI: SectionIteratorRef;
+    new(SI: SectionIteratorRef) { self.SI = SI; }
+    drop { llvm::LLVMDisposeSectionIterator(self.SI); }
 }
 
 type section_iter = {llsi: SectionIteratorRef, dtor: @section_iter_res};
